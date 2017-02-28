@@ -1,7 +1,7 @@
 require 'sinatra/base'
 require 'yajl/yajl'
 require 'active_support/core_ext/hash/indifferent_access'
-require './RedmineIntegrator'
+require_relative './RedmineIntegrator'
 
 class PapertrailWebHook < Sinatra::Application
   post '/' do
@@ -9,7 +9,7 @@ class PapertrailWebHook < Sinatra::Application
     data = ActiveSupport::HashWithIndifferentAccess.new(parser.parse(params[:payload]))
 
     data[:events].each do |event|
-      CreateRedmineIssue event
+      create_redmine_issue event
     end
 
     'ok'

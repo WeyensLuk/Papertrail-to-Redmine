@@ -4,5 +4,5 @@ source "https://rubygems.org"
 # gem "rails"
 gem 'sinatra'
 gem 'yajl-ruby', require: 'yajl'
-gem 'activesupport'
 gem 'activeresource'
+gem 'activesupport'
