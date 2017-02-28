@@ -5,3 +5,4 @@ source "https://rubygems.org"
 gem 'sinatra'
 gem 'yajl-ruby', require: 'yajl'
 gem 'activesupport'
+gem 'activeresource'

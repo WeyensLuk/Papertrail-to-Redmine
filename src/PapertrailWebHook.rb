@@ -9,7 +9,7 @@ class PapertrailWebHook < Sinatra::Application
     data = ActiveSupport::HashWithIndifferentAccess.new(parser.parse(params[:payload]))
 
     data[:events].each do |event|
-      RedmineIntegrator.new.CreateIssue event
+      CreateRedmineIssue event
     end
 
     'ok'
@@ -18,7 +18,6 @@ class PapertrailWebHook < Sinatra::Application
   get '/' do
     'Sup!'
   end
-
 
   # start the server if ruby file executed directly
   run! if app_file == $0
