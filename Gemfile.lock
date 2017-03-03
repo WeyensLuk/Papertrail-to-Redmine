@@ -37,6 +37,7 @@ PLATFORMS
 DEPENDENCIES
   activeresource
   activesupport
+  minitest
   sinatra
   yajl-ruby
 

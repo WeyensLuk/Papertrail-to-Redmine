@@ -9,7 +9,7 @@ class PapertrailWebHook < Sinatra::Application
     data = ActiveSupport::HashWithIndifferentAccess.new(parser.parse(params[:payload]))
 
     data[:events].each do |event|
-      create_redmine_issue event
+      log_redmine_issue event, data[:saved_search][:html_search_url]
     end
 
     'ok'

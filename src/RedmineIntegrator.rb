@@ -46,9 +46,44 @@ def get_papertrail_project
   projects.elements.first{|project| project.name == 'Papertrail'}
 end
 
-papertrail_project = get_papertrail_project
-if !papertrail_project then papertrail_project = create_papertrail_project end
+def truncate(string, max)
+  string && string.length > max ? "#{string[0...max-3]}..." : string
+end
+
+def find_issue subject
+  Issue.find(:all, :params => {:subject => subject}).elements.first
+end
+
+def parse_redmine_issue_subject_from_papertrail_message message
+  truncate(message.split(';')[4], 250)
+end
+
+def generate_papertrail_more_info_link papertrail_event
+  "for more info view: #{@papertrail_url}?center_on_id=#{papertrail_event[:id]}"
+end
 
 def create_redmine_issue papertrail_event
-    puts 'Issue created'
+  issue = Issue.new subject: parse_redmine_issue_subject_from_papertrail_message(papertrail_event[:message]),
+            project_id: @@papertrail_project.id,
+            description: "#{papertrail_event[:message]}\n\n#{generate_papertrail_more_info_link(papertrail_event)}"
+  
+  if !issue.save then puts issue.errors.full_messages end
+end
+
+def update_redmine_issue_with_new_information issue, papertrail_event
+  issue.description += "\n\nThis issue reoccured on #{papertrail_event[:display_received_at]}\n#{generate_papertrail_more_info_link(papertrail_event)}"
+  if !issue.save then puts issue.errors.full_messages end
+end
+
+@@papertrail_project = get_papertrail_project
+if !@@papertrail_project then @@papertrail_project = create_papertrail_project end
+
+def log_redmine_issue papertrail_event, papertrail_url
+  @papertrail_url = papertrail_url
+  issue = find_issue(parse_redmine_issue_subject_from_papertrail_message(papertrail_event[:message]))
+  if issue
+    update_redmine_issue_with_new_information issue, papertrail_event
+  else
+    create_redmine_issue papertrail_event
+  end
 end
